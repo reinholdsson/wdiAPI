@@ -48,9 +48,9 @@ get_data_from_url <- function(url, stringsAsFactors = TRUE) {
 }
 
 # Get data given a specific subject (e.g. "topics", "countries", "indicators")
-get_all <- function(x) {
+get_all <- function(x, per_page = 25000) {
     get_data_from_url(
-        sprintf("http://api.worldbank.org/%s?per_page=99999", x)
+        sprintf("http://api.worldbank.org/%s?per_page=%s", x, per_page)
     )
 }
 
@@ -59,9 +59,9 @@ get_all <- function(x) {
 # get_all("countries")
 # get_all("indicators")
 
-get_variable <- function(x) {
+get_variable <- function(x, per_page = 25000) {
     get_data_from_url(
-        sprintf("http://api.worldbank.org/countries/all/indicators/%s?per_page=9999", x)
+        sprintf("http://api.worldbank.org/countries/all/indicators/%s?per_page=%s", x, per_page)
     )
 }
 
