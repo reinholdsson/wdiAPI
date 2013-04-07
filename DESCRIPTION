@@ -1,0 +1,10 @@
+Package: wdiAPI
+Type: Package
+Title: Get data from the World Bank API
+Version: 1.0
+Date: 2013-04-07
+Author: Thomas Reinholdsson
+Maintainer: Thomas Reinholdsson <reinholdsson@gmail.com>
+Description: ...
+Depends: XML
+License: What license is it under?
