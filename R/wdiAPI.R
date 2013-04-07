@@ -1,27 +1,27 @@
 library(XML)
 
-# Fetch WDI xml file
-get_wdi_xml <- function(url) {
+# Get data from url
+get_data_from_url <- function(url) {
+    
+    # Get XML
     f <- paste(readLines(url, warn = FALSE), collapse="")
     f <- xmlParse(f)
-}
-
-# Get ids from WDI
-get_ids <- function(url) {
-    x <- get_wdi_xml(url)
-    x <- xmlApply(xmlRoot(x), xmlAttrs)
-    x <- unlist(x)
-    names(x) <- NULL
-    return(x)
+    
+    # Data
+    data <- xmlToDataFrame(f, stringsAsFactors = FALSE)
+    
+    # Add ids to data
+    ids <- unlist(xmlApply(xmlRoot(f), xmlAttrs))
+    names(ids) <- NULL
+    data$id <- ids
+    
+    return(data)
 }
 
 # Get data given a specific subject (e.g. "topics", "countries", "indicators")
 get_all <- function(x) {
     url <- sprintf("http://api.worldbank.org/%s?per_page=99999", x)
-    res <- get_wdi(url)
-    res <- xmlToDataFrame(res, stringsAsFactors = FALSE)
-    res$id <- get_ids(url)
-    return(res)
+    get_data_from_url(url)
 }
 
 # Examples
