@@ -1,1 +1,2 @@
-exportPattern("^[[:alpha:]]+")
+export(get_data)
+export(get_metadata)
