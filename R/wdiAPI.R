@@ -1,17 +1,27 @@
-# Function to add attributes (used in get_all_attrs)
-get_attrs <- function(x) {
-    if (!is.null(x)) {
-        attrs <- data.frame(matrix(x, nrow = 1, byrow = TRUE))
-        colnames(attrs) <- names(x)
+#' Get attributes
+#' 
+#' Function to get attributes (used in get_all_attrs)
+#' 
+#' @param xml XML character string
+#' 
+get_attrs <- function(xml) {
+    if (!is.null(xml)) {
+        attrs <- data.frame(matrix(xml, nrow = 1, byrow = TRUE))
+        colnames(attrs) <- names(xml)
         return(attrs)
     } else {
         return(NULL)
     }
 }
 
-# Function to get all attributes as a list
-get_all_attrs <- function(x) {
-    attrs <- xmlApply(xmlRoot(x), function(x) {
+#' Get all attributes
+#' 
+#' Function to get all attributes as a list
+#' 
+#' @param xml XML character string
+#' 
+get_all_attrs <- function(xml) {
+    attrs <- xmlApply(xmlRoot(xml), function(x) {
         
         # Root attributes
         root <- get_attrs(xmlAttrs(x))
@@ -28,7 +38,13 @@ get_all_attrs <- function(x) {
     return(attrs)
 }
 
-# Get data from url
+#' Get data from url
+#' 
+#' ...
+#' 
+#' @param url Url
+#' @param stringsAsFactors Strings as factors
+#' 
 get_data_from_url <- function(url, stringsAsFactors = TRUE) {
     # Get XML
     f <- xmlParse(
@@ -47,23 +63,58 @@ get_data_from_url <- function(url, stringsAsFactors = TRUE) {
     return(data)
 }
 
-# Get data given a specific subject (e.g. "topics", "countries", "indicators")
-get_all <- function(x, per_page = 25000) {
+#' Get metadata
+#' 
+#' Query the WDI API for metadata given a specific subject.
+#' 
+#' @param subject Subject (e.g. "topics", "countries", "indicators")
+#' @param limit Limit the number of return observations
+#' 
+#' @export
+#'
+#' @examples \dontrun{
+#'  x <- get_metadata("topics")
+#'  x <- get_metadata("countries")
+#'  x <- get_metadata("indicators")
+#' }
+get_metadata <- function(subject, limit = 25000) {
     get_data_from_url(
-        sprintf("http://api.worldbank.org/%s?per_page=%s", x, per_page)
+        sprintf("http://api.worldbank.org/%s?per_page=%s", subject, limit)
     )
 }
 
-# Examples
-# get_all("topics")
-# get_all("countries")
-# get_all("indicators")
-
-get_variable <- function(x, per_page = 25000) {
-    get_data_from_url(
-        sprintf("http://api.worldbank.org/countries/all/indicators/%s?per_page=%s", x, per_page)
+#' Get data
+#' 
+#' Query the WDI API for indicator data
+#' 
+#' @param indicator Character vector of wdi indicators
+#' @param date Integer vector of years
+#' @param country Character vector of countries (ISO 3 or ISO 2 letter codes)
+#' @param limit Limit the number of return observations
+#' 
+#' @export
+#' 
+#' @examples \dontrun{
+#'  x <- get_data("SP.POP.TOTL")
+#' }
+#' 
+get_data <- function(indicator, date = 2012, country = NULL, limit = 25000) {
+    
+    if (is.null(country)) country <- "all"
+    
+    # For each indicator
+    do.call("rbind", 
+        lapply(indicator, function(ind) {
+            
+            # For each country
+            do.call("rbind", 
+                lapply(country, function(ctr) {
+                    get_data_from_url(
+                        sprintf("http://api.worldbank.org/countries/%s/indicators/%s?date=%s:%s&per_page=%s", ctr, ind, min(date), max(date), limit)
+                    )
+                })
+            )
+        })
     )
 }
 
-# Examples
-# get_variable("SP.POP.TOTL")

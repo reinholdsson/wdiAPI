@@ -1,10 +1,10 @@
 Package: wdiAPI
 Type: Package
-Title: Get data from the World Bank API
+Title: WDI API for R
 Version: 1.0
 Date: 2013-04-07
 Author: Thomas Reinholdsson
 Maintainer: Thomas Reinholdsson <reinholdsson@gmail.com>
-Description: ...
+Description: Get data from the World Bank API
 Depends: XML
-License: What license is it under?
+License: AGPLv3
